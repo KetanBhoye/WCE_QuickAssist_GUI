@@ -102,7 +102,7 @@ function linkify(text) {
   function sendMessageToRasa(message) {
     showTypingAnimation();
 
-    fetch('http://64.227.142.116:5005/webhooks/rest/webhook', {
+    fetch('http://64.227.142.116:5005/webhooks/rest/webhook ', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
