@@ -9,32 +9,72 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   document.getElementById('send-btn').addEventListener('click', function () {
+    sendMessageFromInput();
+  });
+
+  inputField.addEventListener('keypress', function (e) {
+    if (e.key === 'Enter') {
+      sendMessageFromInput();
+    }
+  });
+
+  function sendMessageFromInput() {
     var message = inputField.value;
     if (message) {
       displayMessage(message, 'user');
       sendMessageToRasa(message);
       inputField.value = ''; // Clear the input field after sending
     }
-  });
+  }
 
-  inputField.addEventListener('keypress', function (e) {
-    if (e.key === 'Enter') {
-      var message = inputField.value;
-      if (message) {
-        displayMessage(message, 'user');
-        sendMessageToRasa(message);
-        inputField.value = ''; // Clear the input field after sending
-      }
+  // Add push-to-talk functionality
+  let recognition = null;
+
+  function startSpeechRecognition() {
+    recognition = new webkitSpeechRecognition() || SpeechRecognition();
+    recognition.lang = 'en-US';
+    recognition.start();
+
+    recognition.onresult = function (event) {
+      const speechResult = event.results[0][0].transcript;
+      inputField.value = speechResult;
+      sendMessageFromInput();
+    };
+
+    recognition.onerror = function (event) {
+      console.error('Speech recognition error:', event.error);
+    };
+  }
+
+  function stopSpeechRecognition() {
+    if (recognition) {
+      recognition.stop();
     }
-  });
-function linkify(text) {
-  // This regular expression finds Markdown link syntax.
-  const markdownUrlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
-  return text.replace(markdownUrlRegex, (match, linkText, url) => {
-    return `<a href="${url}" target="_blank">${linkText}</a>`;
-  });
-}
+  }
 
+  document.getElementById('voice-input-btn').addEventListener('mousedown', function () {
+    startSpeechRecognition();
+  });
+
+  document.getElementById('voice-input-btn').addEventListener('mouseup', function () {
+    stopSpeechRecognition();
+  });
+
+  document.getElementById('voice-input-btn').addEventListener('touchstart', function () {
+    startSpeechRecognition();
+  });
+
+  document.getElementById('voice-input-btn').addEventListener('touchend', function () {
+    stopSpeechRecognition();
+  });
+
+  function linkify(text) {
+    // This regular expression finds Markdown link syntax.
+    const markdownUrlRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+    return text.replace(markdownUrlRegex, (match, linkText, url) => {
+      return `<a href="${url}" target="_blank">${linkText}</a>`;
+    });
+  }
   
   
   function displayMessage(messageData, sender) {
@@ -79,7 +119,6 @@ function linkify(text) {
     messagesContainer.appendChild(messageElement);
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
-
 
   function showTypingAnimation() {
     var typingElement = document.createElement('div');
