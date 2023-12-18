@@ -3,3 +3,8 @@
  rasa run -m models --enable-api --cors "*" --debug
  
 rasa run --enable-api -p 5055
+
+tmux kill-session -t my_session
+
+cd ~/WCE_ChatBot  # Move to the directory where your Rasa server is located
+rasa run --ssl-certificate cert.pem --ssl-keyfile key.pem
