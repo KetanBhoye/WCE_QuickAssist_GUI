@@ -2,6 +2,9 @@
  
  rasa run -m models --enable-api --cors "*" --debug
  
+ rasa run -m models --enable-api --cors "https://wce-quick-assist-gui.vercel.app"
+
+ 
 rasa run --enable-api -p 5055
 
 tmux kill-session -t my_session
